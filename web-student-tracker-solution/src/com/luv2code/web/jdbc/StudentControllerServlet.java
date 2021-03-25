@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,13 +40,15 @@ public class StudentControllerServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		Cookie ck=new Cookie("uname",dataSource.toString());//creating cookie object
+		response.addCookie(ck);//adding cookie in the response
 		try {
 			// read the "command" parameter
 			String theCommand = request.getParameter("command");
 			
 			// if the command is missing, then default to listing students
 			if (theCommand == null) {
-				theCommand = "LIST";
+				theCommand = "LOGIN";
 			}
 			
 			// route to the appropriate method
@@ -54,7 +57,10 @@ public class StudentControllerServlet extends HttpServlet {
 			case "LIST":
 				listStudents(request, response);
 				break;
-				
+				case "LOGIN":
+					Login(request, response);
+					break;
+
 			case "ADD":
 				addStudent(request, response);
 				break;
@@ -72,7 +78,10 @@ public class StudentControllerServlet extends HttpServlet {
 				break;
 				
 			default:
-				listStudents(request, response);
+				System.out.println("hello");
+				//listStudents(request, response);
+				RequestDispatcher dispatcher = request.getRequestDispatcher("Login/SignUp.jsp");
+				dispatcher.forward(request, response);
 			}
 				
 		}
@@ -160,10 +169,17 @@ public class StudentControllerServlet extends HttpServlet {
 		request.setAttribute("STUDENT_LIST", students);
 				
 		// send to JSP page (view)
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/list-students.jsp");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("list-students.jsp");
 		dispatcher.forward(request, response);
+		System.out.println(request.getParameter("username"));
 	}
 
+	private void Login(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		// send to JSP page (view)
+		RequestDispatcher dispatcher = request.getRequestDispatcher("Login.jsp");
+		dispatcher.forward(request, response);
+	}
 }
 
 
